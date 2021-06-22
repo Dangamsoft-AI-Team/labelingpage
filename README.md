@@ -10,4 +10,13 @@
 ## How to use github
 ```shell
 git clone {url}
+``` 
+```shell
+git add {files or directories you want to upload}
+```
+```shell
+git commit -m {message you want to write}
+```
+```shell
+git push
 ```
