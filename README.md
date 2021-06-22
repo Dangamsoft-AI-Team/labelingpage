@@ -6,3 +6,8 @@
 
 ## 기획안  
 ![](images/do-messenger_screenshot_2021-06-21_15_08_11.png)
+  
+## How to use github
+```shell
+git clone {url}
+```
