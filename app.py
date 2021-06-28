@@ -3,42 +3,45 @@ from datetime import datetime
 #from pymongo import MongoClient
 import os
 from werkzeug.utils import secure_filename
-from utils import *
 from flask import session
+from database import banji_conn,conn
+from datetime import date
 
-current_path = os.getcwd()+'/static/files'
-file_list = os.listdir(current_path)
 
 app = Flask(__name__, static_url_path="/", static_folder="static/", template_folder="templates/")
+#app = Flask(__name__, template_folder="templates/")
+whatdate = date.today()
 
-print(current_path)
 @app.route('/', methods=['POST', 'GET'])
 def home():
     if request.method == 'POST' or 'GET':
 
-        if not os.path.exists(current_path):
-            return abort(404)
-
-        # Check if path is a file and serve
-        if os.path.isfile(current_path):
-            return send_file(current_path)
-
-            # Show directory contents
-        files = os.listdir(current_path)
-        files_list = ['files/'+file for file in files]
-
-        return render_template('index.html',files=files_list,current_path=current_path)
+        return render_template('index.html')
 
 
-@app.route('/fileupload', methods=['POST', 'GET'])
-def fileupload():
-    if request.method == 'POST':
-        f = request.files['file']
-        filename = secure_filename(f.filename)
-        f.save(os.path.join(current_path, '/'+filename))
+@app.route('/add',methods=['POST'])
+def add_data():
+    if request.method == 'POST' or 'GET':
 
-        return '제출 성공'
+        selected_size = request.form.getlist('options')
+        selected_color = request.form.getlist('colors')
+        recommended_names = str(request.form['recname'])
 
+
+        sql_sentence = f"""
+        insert into Labeling_image(image_path,animal_size,animal_color,recommand_name,collect_date) 
+        values('pathtest', '{str(selected_size[0])}','{str(selected_color[0])}','{str(recommended_names)}', '{whatdate}');
+        """
+
+        curs = conn.cursor()
+        curs.execute(sql_sentence)
+        conn.commit()
+
+        return render_template(
+            'index.html',
+            options=selected_size,
+            colors = selected_color,
+            recname=recommended_names)
 
 
 if __name__ == "__main__":
